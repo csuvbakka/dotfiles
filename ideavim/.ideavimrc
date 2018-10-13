@@ -1,0 +1,7 @@
+source ~/.vim/common.vim
+
+nmap <leader>r :action Refactorings.QuickListPopupAction<CR>
+nmap <C-R><C-D> :action ReformatCode<CR>
+nmap <leader>f :action GotoFile<CR>
+nmap <leader>n :action FileStructurePopup<CR>
+
