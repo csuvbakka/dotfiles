@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
-if [ -z "$INSTALL_ROOT" ]; INSTALL_ROOT='..'; fi
+if [ -z "$INSTALL_ROOT" ]; then INSTALL_ROOT='..'; fi
 THIS_DIR='vim'
 
 VIMDIR=$HOME/.vim
 mkdir -p $VIMDIR
-cp -R colors $VIMDIR/colors
+mkdir -p $VIMDIR/colors
+cp $INSTALL_ROOT/$THIS_DIR/colors/* $VIMDIR/colors/
 
 VIMRC=$HOME/.vimrc
 if [ -f $VIMRC ]; then
