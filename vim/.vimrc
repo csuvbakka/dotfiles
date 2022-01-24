@@ -11,7 +11,7 @@ set laststatus=2     "always display status line
 syntax on
 set background=dark
 set t_Co=256
-colorscheme gruvbox
+colorscheme dogrun
 
 "remember last position when reopening a file
 if has("autocmd")
