@@ -1,0 +1,13 @@
+source $HOME/.vim/common.vim
+
+set nohlsearch
+
+nnoremap <leader>; A;<Esc>
+
+" Tools -> Options -> Environment -> Keyboard
+nnoremap <leader>d :vsc Edit.PeekDefinition<CR>
+
+" Remove stuff around parentheses, ie. static_cast<int>(x) => x
+nnoremap <leader>p df(f)xb
+" Switch two parameters within parentheses, ie. (int i, double j) => (double j, int i)
+nnoremap <leader>b df,f)i, <Esc>px%lx
