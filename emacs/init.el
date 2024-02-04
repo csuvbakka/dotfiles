@@ -383,6 +383,11 @@
   (golden-ratio-mode 1))
 (put 'narrow-to-region 'disabled nil)
 
+(use-package rust-mode
+  :hook ((rust-mode) . (lambda () (setq indent-tabs-mode nil)))
+  :config
+  (setq rust-format-on-save t))
+
 (load-file "~/.emacs.d/init-specific.el")
 
 (setq custom-file "~/.emacs.d/custom-file.el")
