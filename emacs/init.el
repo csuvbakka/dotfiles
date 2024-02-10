@@ -131,7 +131,7 @@
   (evil-undo-system 'undo-redo)
   (evil-want-C-u-scroll t)
   (evil-want-C-d-scroll t)
-  (evil-want-C-i-jump t)
+  (evil-want-C-i-jump nil)
   (evil-symbol-word-search t "search by symbol with * and #.")
   :config
   (evil-set-initial-state 'xref--xref-buffer-mode 'emacs)
@@ -392,3 +392,11 @@
 
 (setq custom-file "~/.emacs.d/custom-file.el")
 (load-file custom-file)
+
+(setq display-buffer-alist
+	  '(
+		((derived-mode . compilation-mode)
+		 (display-buffer-reuse-mode-window
+		  display-buffer-below-selected)
+		 (dedicated . t)
+		 )))
