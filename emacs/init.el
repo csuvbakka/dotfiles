@@ -50,26 +50,23 @@
 (elpaca-wait)
 ;; end of Elpaca
 
-;; WSL-specific setup
-(when (and (eq system-type 'gnu/linux)
-           (getenv "WSLENV"))
-
+(when (eq system-type 'gnu/linux)
   ;; pgtk is only available in Emacs 29+
   ;; without it Emacs fonts don't scale properly on
   ;; HiDPI display
   (if (< emacs-major-version 29)
       (set-frame-font "Cascadia Code 28")
-    (set-frame-font "Cascadia Code 14"))
+    (set-frame-font "Cascadia Code 13"))
 
-  ;; Teach Emacs how to open links in your default Windows browser
-  (let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
-        (cmd-args '("/c" "start")))
-    (when (file-exists-p cmd-exe)
-      (setq browse-url-generic-program  cmd-exe
-            browse-url-generic-args     cmd-args
-            browse-url-browser-function 'browse-url-generic
-            search-web-default-browser 'browse-url-generic))))
-;;end of WSL-specific setup
+  (when (getenv "WSLENV")
+	;; Teach Emacs how to open links in your default Windows browser
+	(let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
+		  (cmd-args '("/c" "start")))
+	  (when (file-exists-p cmd-exe)
+		(setq browse-url-generic-program  cmd-exe
+			  browse-url-generic-args     cmd-args
+			  browse-url-browser-function 'browse-url-generic
+			  search-web-default-browser 'browse-url-generic)))))
 
 (setq inhibit-startup-message t) ; Do not show the startup screen
 (scroll-bar-mode -1) ; Disable visible scrollbar
@@ -140,9 +137,9 @@
   (evil-mode 1))
 
 (with-eval-after-load 'evil
-    (defalias #'forward-evil-word #'forward-evil-symbol)
-    ;; make evil-search-word look for symbol rather than word boundaries
-    (setq-default evil-symbol-word-search t))
+  (defalias #'forward-evil-word #'forward-evil-symbol)
+  ;; make evil-search-word look for symbol rather than word boundaries
+  (setq-default evil-symbol-word-search t))
 
 (use-package evil-surround
   :after (evil)
@@ -152,9 +149,9 @@
 (use-package evil-args
   :after (evil)
   :bind (:map evil-inner-text-objects-map
-         ("a" . evil-inner-arg)
-         :map evil-outer-text-objects-map
-         ("a" . evil-outer-arg))
+			  ("a" . evil-inner-arg)
+			  :map evil-outer-text-objects-map
+			  ("a" . evil-outer-arg))
   :general
   (global-evil
 	"M-l" 'evil-forward-arg
@@ -166,10 +163,10 @@
 (use-package evil-embrace 
   :after (evil embrace evil-surround)
   :hook (c++-mode . (lambda () (embrace-add-pair-regexp ?C "\\(\\w\\|\\s_\\)+?<" ">" '
-														 (lambda ()
-														   (let ((fname (read-string "Generic type: ")))
-															 (cons (format "std::%s<" (or fname "")) ">")))
-														 (embrace-build-help "std::TYPE<" ">"))))
+														(lambda ()
+														  (let ((fname (read-string "Generic type: ")))
+															(cons (format "std::%s<" (or fname "")) ">")))
+														(embrace-build-help "std::TYPE<" ">"))))
   :general
   (global-evil-leader
 	"e" 'embrace-commander)
@@ -226,23 +223,23 @@
 	"y" 'helm-show-kill-ring
 	"/" 'helm-occur)
   :custom
-   (helm-candidate-number-limit 300)
-   (helm-move-to-line-cycle-in-source t "cycle to beggining or end afte reaching top/bottom of list")
-   (helm-completion-style 'emacs "Necessary to have multiline candidates/text-properties show in completion buffer")
-   (helm-google-suggest-search-url "https://www.google.com/search?q=%s")
+  (helm-candidate-number-limit 300)
+  (helm-move-to-line-cycle-in-source t "cycle to beggining or end afte reaching top/bottom of list")
+  (helm-completion-style 'emacs "Necessary to have multiline candidates/text-properties show in completion buffer")
+  (helm-google-suggest-search-url "https://www.google.com/search?q=%s")
   :config
   (helm-mode 1))
-  (global-set-key (kbd "M-x") 'helm-M-x)
-  (setq
-   helm-mode-fuzzy-match t
-   helm-completion-in-region-fuzzy-match t
-   helm-allow-mouse nil)
+(global-set-key (kbd "M-x") 'helm-M-x)
+(setq
+ helm-mode-fuzzy-match t
+ helm-completion-in-region-fuzzy-match t
+ helm-allow-mouse nil)
 
 (use-package helm-git-grep
   :general
   (global-evil-leader
-   "ga" 'helm-git-grep-at-point
-   "gg" 'helm-git-grep))
+	"ga" 'helm-git-grep-at-point
+	"gg" 'helm-git-grep))
 
 (use-package git-gutter
   :hook (prog-mode . git-gutter-mode)
