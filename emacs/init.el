@@ -108,8 +108,7 @@
 
 (global-evil-leader
   :infix "c"
-  "c" 'comment-region
-  "u" 'uncomment-region)
+  "c" 'comment-or-uncomment-region)
 
 (global-evil-leader
   :infix "n"
@@ -134,6 +133,10 @@
   (evil-set-initial-state 'xref--xref-buffer-mode 'emacs)
   (evil-set-initial-state 'xref--transient-buffer-mode 'emacs)
   (evil-set-initial-state 'compilation-mode 'emacs)
+  (evil-set-initial-state 'flycheck-error-list-mode 'emacs)
+  (evil-set-initial-state 'elpaca-manager-mode 'emacs)
+  (evil-set-initial-state 'elpaca-info-mode 'emacs)
+  (evil-set-initial-state 'elpaca-log-mode 'emacs)
   (evil-mode 1))
 
 (with-eval-after-load 'evil
@@ -274,6 +277,9 @@
   ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
   )
 
+(use-package all-the-icons
+  :if (display-graphic-p))
+
 ;; https://github.com/magit/forge
 
 (use-package projectile
@@ -385,15 +391,45 @@
   :config
   (setq rust-format-on-save t))
 
-(load-file "~/.emacs.d/init-specific.el")
-
-(setq custom-file "~/.emacs.d/custom-file.el")
-(load-file custom-file)
-
 (setq display-buffer-alist
 	  '(
-		((derived-mode . compilation-mode)
+		((or (derived-mode . compilation-mode)
+			 (derived-mode . flycheck-error-list-mode))
 		 (display-buffer-reuse-mode-window
 		  display-buffer-below-selected)
 		 (dedicated . t)
 		 )))
+
+(defun lsp-booster--advice-json-parse (old-fn &rest args)
+  "Try to parse bytecode instead of json."
+  (or
+   (when (equal (following-char) ?#)
+     (let ((bytecode (read (current-buffer))))
+       (when (byte-code-function-p bytecode)
+         (funcall bytecode))))
+   (apply old-fn args)))
+(advice-add (if (progn (require 'json)
+                       (fboundp 'json-parse-buffer))
+                'json-parse-buffer
+              'json-read)
+            :around
+            #'lsp-booster--advice-json-parse)
+
+(defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
+  "Prepend emacs-lsp-booster command to lsp CMD."
+  (let ((orig-result (funcall old-fn cmd test?)))
+    (if (and (not test?)                             ;; for check lsp-server-present?
+             (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
+             lsp-use-plists
+             (not (functionp 'json-rpc-connection))  ;; native json-rpc
+             (executable-find "emacs-lsp-booster"))
+        (progn
+          (message "Using emacs-lsp-booster for %s!" orig-result)
+          (cons "emacs-lsp-booster" orig-result))
+      orig-result)))
+(advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command)
+
+(load-file "~/.emacs.d/init-specific.el")
+
+(setq custom-file "~/.emacs.d/custom-file.el")
+(load-file custom-file)
