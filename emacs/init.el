@@ -391,6 +391,13 @@
   :config
   (setq rust-format-on-save t))
 
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable)
+  :config
+  (setq elpy-rpc-virtualenv-path 'current))
+
 (setq display-buffer-alist
 	  '(
 		((or (derived-mode . compilation-mode)
