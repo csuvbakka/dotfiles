@@ -358,7 +358,7 @@
 (use-package avy
   :general
   (global-evil-leader
-	"SPC" 'avy-goto-char-2))
+	"SPC" 'avy-goto-char-timer))
 
 (use-package firestarter)
 
