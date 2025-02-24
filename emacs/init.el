@@ -398,6 +398,8 @@
   :config
   (setq elpy-rpc-virtualenv-path 'current))
 
+(use-package web-mode)
+
 (setq display-buffer-alist
 	  '(
 		((or (derived-mode . compilation-mode)
